@@ -175,67 +175,29 @@ Valid Values: Full, Shortened, Disabled"
                                                            (powerline-current-separator)
                                                            (cdr powerline-default-separator-dir))))
                           (mode-line-face (if active 'mode-line 'mode-line-inactive))
-                          (visual-block (if (featurep 'evil)
-                                            (and (evil-visual-state-p)
-                                                 (eq evil-visual-selection 'block))
-                                          nil))
-                          (visual-line (if (featurep 'evil)
-                                           (and (evil-visual-state-p)
-                                                (eq evil-visual-selection 'line))
-                                         nil))
-                          (current-evil-state-string (if (featurep 'evil)
-                                                         (upcase (concat (symbol-name evil-state)
-                                                                         (cond (visual-block "-BLOCK")
-                                                                               (visual-line "-LINE"))))
-                                                       nil))
 
                           (outer-face
                            (if (powerline-selected-window-active)
-                               (if (featurep 'evil)
-                                   (cond ((eq evil-state (intern "normal"))  'airline-normal-outer)
-                                         ((eq evil-state (intern "insert"))  'airline-insert-outer)
-                                         ((eq evil-state (intern "visual"))  'airline-visual-outer)
-                                         ((eq evil-state (intern "replace")) 'airline-replace-outer)
-                                         ((eq evil-state (intern "emacs"))   'airline-emacs-outer)
-                                         (t                                  'airline-normal-outer))
-                                 'airline-normal-outer)
+                               'airline-normal-outer
                              'powerline-inactive1))
 
                           (inner-face
                            (if (powerline-selected-window-active)
-                               (if (featurep 'evil)
-                                   (cond ((eq evil-state (intern "normal")) 'airline-normal-inner)
-                                         ((eq evil-state (intern "insert")) 'airline-insert-inner)
-                                         ((eq evil-state (intern "visual")) 'airline-visual-inner)
-                                         (t                                 'airline-normal-inner))
-                                 'airline-normal-inner)
+                               'airline-normal-inner
                              'powerline-inactive2))
 
                           (center-face
                            (if (powerline-selected-window-active)
-                               (if (featurep 'evil)
-                                   (cond ((eq evil-state (intern "normal")) 'airline-normal-center)
-                                         ((eq evil-state (intern "insert")) 'airline-insert-center)
-                                         ((eq evil-state (intern "visual")) 'airline-visual-center)
-                                         (t                                 'airline-normal-center))
-                                 'airline-normal-center)
+                               'airline-normal-center
                              'powerline-inactive2))
 
                           ;; Left Hand Side
-                          (lhs-mode (if (featurep 'evil)
-                                        (list
-                                         ;; Evil Mode Name
-                                         (powerline-raw (concat " " current-evil-state-string " ") outer-face)
-                                         (funcall separator-left outer-face inner-face)
-                                         ;; Modified string
-                                         (powerline-raw "%*" inner-face 'l)
-                                         )
-                                        (list
-                                         ;; Modified string
-                                         (powerline-raw "%*" outer-face 'l)
-                                         ;; Separator >
-                                         (powerline-raw " " outer-face)
-                                         (funcall separator-left outer-face inner-face))))
+                          (lhs-mode (list
+                                     ;; Modified string
+                                     (powerline-raw "%*" outer-face 'l)
+                                     ;; Separator >
+                                     (powerline-raw " " outer-face)
+                                     (funcall separator-left outer-face inner-face)))
 
                           (lhs-rest (list
                                      ;; ;; Separator >
@@ -252,34 +214,17 @@ Valid Values: Full, Shortened, Disabled"
                                      (powerline-raw " " inner-face)
                                      (funcall separator-left inner-face center-face)
 
-                                     ;; Directory
-                                     (when (eq airline-display-directory 'airline-directory-shortened)
-                                       (powerline-raw (airline-shorten-directory default-directory airline-shortened-directory-length) center-face 'l))
-                                     (when (eq airline-display-directory 'airline-directory-full)
-                                       (powerline-raw default-directory center-face 'l))
-                                     (when (eq airline-display-directory nil)
-                                       (powerline-raw " " center-face))
+                                     (powerline-raw " " center-face)
 
                                      ;; Buffer ID
                                      ;; (powerline-buffer-id center-face)
                                      (powerline-raw "%b" center-face)
 
-                                     ;; Current Function (which-function-mode)
-                                     (when (and (boundp 'which-func-mode) which-func-mode)
-                                       ;; (powerline-raw which-func-format 'l nil))
-                                       (powerline-raw which-func-format center-face 'l))
-
                                      ;; ;; Separator >
                                      ;; (powerline-raw " " center-face)
                                      ;; (funcall separator-left mode-line face1)
 
-                                     (when (boundp 'erc-modified-channels-object)
-                                       (powerline-raw erc-modified-channels-object center-face 'l))
-
-                                     ;; ;; Separator <
-                                     ;; (powerline-raw " " face1)
-                                     ;; (funcall separator-right face1 face2)
-                                   ))
+                                     ))
 
                           (lhs (append lhs-mode lhs-rest))
 
@@ -290,8 +235,8 @@ Valid Values: Full, Shortened, Disabled"
                                      ;; (powerline-raw (char-to-string #x2b83) center-face 'l)
 
                                      ;; Minor Modes
-                                     (powerline-minor-modes center-face 'l)
-                                     ;; (powerline-narrow center-face 'l)
+                                     ;;(powerline-minor-modes center-face 'l)
+                                     (powerline-narrow center-face 'l)
 
                                      ;; Subseparator <
                                      (powerline-raw (char-to-string airline-utf-glyph-subseparator-right) center-face 'l)
@@ -308,17 +253,13 @@ Valid Values: Full, Shortened, Disabled"
                                      (when powerline-display-buffer-size
                                        (powerline-buffer-size inner-face 'l))
 
-                                     ;; Mule Info
-                                     (when powerline-display-mule-info
-                                       (powerline-raw mode-line-mule-info inner-face 'l))
-
                                      (powerline-raw " " inner-face)
 
                                      ;; Separator <
                                      (funcall separator-right inner-face outer-face)
 
                                      ;; LN charachter
-                                     (powerline-raw (char-to-string airline-utf-glyph-linenumber) outer-face 'l)
+                                     ;;(powerline-raw (char-to-string airline-utf-glyph-linenumber) outer-face 'l)
 
                                      ;; Current Line
                                      (powerline-raw "%4l" outer-face 'l)
@@ -329,9 +270,7 @@ Valid Values: Full, Shortened, Disabled"
                                      ;; % location in file
                                      (powerline-raw "%6p" outer-face 'r)
 
-                                     ;; position in file image
-                                     (when powerline-display-hud
-                                       (powerline-hud inner-face outer-face)))
+                                     )
                                ))
 
                      ;; Combine Left and Right Hand Sides
@@ -378,7 +317,7 @@ Valid Values: Full, Shortened, Disabled"
    `(mode-line-inactive    ((t ( :foreground ,inactive1-foreground     :background ,inactive1-background     :box nil :underline nil :overline nil))))
    `(mode-line-buffer-id   ((t ( :foreground ,normal-outer-foreground  :background ,normal-outer-background  :box nil :underline nil :overline nil))))
    `(minibuffer-prompt     ((t ( :foreground ,normal-outer-foreground  :background ,normal-outer-background  :box nil))))
-  ))
+   ))
 
 ;;;###autoload
 (defun airline-curr-dir-git-branch-string (pwd)
